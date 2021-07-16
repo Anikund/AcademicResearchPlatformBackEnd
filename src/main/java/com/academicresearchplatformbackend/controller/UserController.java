@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.desktop.OpenFilesEvent;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -35,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/findAll")
-    @ApiOperation(value="获得所有用户")
+    @ApiOperation(value = "获得所有用户")
     public List<User> findAll() {
         return userService.findAll();
     }
@@ -48,7 +50,57 @@ public class UserController {
         if (s == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<User>(s, HttpStatus.OK);
+            return new ResponseEntity<>(s, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/add")
+    @ApiOperation("添加一个用户")
+    @ApiImplicitParam(name = "user", value = "要添加的用户信息")
+    public ResponseEntity<User> addUser(@RequestBody User user) {
+        User s = userService.addUser(user);
+        if (s == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(s, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/query/{conditions}/{values}")
+    @ApiOperation("条件查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "conditions", value = "查询条件", required = true),
+            @ApiImplicitParam(name = "values", value = "查询值", required = true)
+    })
+    public List<User> conditionalQuery(@PathVariable String[] conditions, @PathVariable String[] values) {
+        return userService.conditionalQuery(conditions, values);
+    }
+
+
+    @PutMapping("/update")
+    @ApiOperation("更新指定的用户")
+    public ResponseEntity<String> updateUser(@RequestBody User user) {
+        Optional<User> opUser = userService.findById(user.getId());
+        if (opUser.isPresent()) {
+            User s = userService.updateUser(user);
+            if (s == null) {
+                return new ResponseEntity<>("更新失败", HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                return new ResponseEntity<>("更新成功", HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>("无该用户", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/login")
+    @ApiOperation("登录")
+    @ApiImplicitParam(name="user", value="登录用户，只需指定其用户名和密码")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        if (userService.authentication(user.getUsername(), user.getPassword())) {
+            return new ResponseEntity<>("成功", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("用户名或密码错误或不存在", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

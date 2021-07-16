@@ -3,6 +3,7 @@ package com.academicresearchplatformbackend.service;
 import com.academicresearchplatformbackend.dao.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     /**
@@ -26,4 +27,13 @@ public interface UserService {
      * @return 删除成功则返回被删除的用户，否则返回null
      */
     User deleteUser(Long userId);
+
+
+    List<User> conditionalQuery(String[] conditions, String[] values);
+
+    Boolean authentication(String username, String password);
+
+    User updateUser(User user);
+
+    Optional<User> findById(Long id);
 }

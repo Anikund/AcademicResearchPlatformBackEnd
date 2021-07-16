@@ -3,10 +3,7 @@ package com.academicresearchplatformbackend.dao;
 import com.sun.istack.NotNull;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -17,6 +14,7 @@ public class User {
     private Long id;
 //    登录用户名
     @NotNull
+    @Column(unique = true)
     private String username;
 //    密码
     @NotNull
@@ -42,4 +40,7 @@ public class User {
     private Integer gender;
 
 
+    @ManyToOne
+    @JoinColumn(name="id")
+    private Organization organization;
 }
