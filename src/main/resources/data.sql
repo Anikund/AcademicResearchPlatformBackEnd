@@ -1,4 +1,3 @@
-insert into user values(username='123',
-                        email='123@123.com', gender=1,
-                        name='12345', password='123456',role=2,
-                        tel='13212341234');
+insert into user values(1,'123@123.com', 1,'aaa','123456',1,'13212341234','test1');
+insert into user values(2,'123@123.com', 1,'aaa','123456',1,'13212341234','test1');
+insert into user values(3,'123@123.com', 1,'aaa','123456',1,'13212341234','test1');
