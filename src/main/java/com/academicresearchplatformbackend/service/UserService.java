@@ -1,5 +1,7 @@
 package com.academicresearchplatformbackend.service;
 
+import com.academicresearchplatformbackend.dao.Menu;
+import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 
 import java.util.List;
@@ -28,7 +30,8 @@ public interface UserService {
      */
     User deleteUser(Long userId);
 
-
+    User findByUsername(String username);
+    Boolean isExist(String username);
     List<User> conditionalQuery(String[] conditions, String[] values);
 
     Boolean authentication(String username, String password);
@@ -36,4 +39,10 @@ public interface UserService {
     User updateUser(User user);
 
     Optional<User> findById(Long id);
+
+
+    //    menus
+    List<Role> getRoles();
+
+    List<Menu> getMenus();
 }

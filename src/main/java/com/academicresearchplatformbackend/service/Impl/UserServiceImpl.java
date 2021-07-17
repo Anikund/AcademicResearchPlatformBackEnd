@@ -1,22 +1,28 @@
 package com.academicresearchplatformbackend.service.Impl;
 
+import com.academicresearchplatformbackend.dao.Menu;
+import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.dao.repository.UserJpaRepository;
+import com.academicresearchplatformbackend.service.MenuService;
 import com.academicresearchplatformbackend.service.UserService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
     //--------Dependency Injection--------------
     private UserJpaRepository userJpaRepository;
-
+    private MenuService menuService;
     @Autowired
     public void setUserJpaRepository(UserJpaRepository userJpaRepository) {
         this.userJpaRepository = userJpaRepository;
@@ -36,14 +42,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUser(User user) {
         System.out.println(user.toString());
+        String salt = new SecureRandomNumberGenerator().nextBytes().toString();
+        int times=2;//salt times;
+        String encodedPassword = new SimpleHash("md5", user.getPassword(), salt, times).toString();
+        user.setSalt(salt);
+        user.setPassword(encodedPassword);
+        userJpaRepository.save(user);
         return userJpaRepository.save(user);
     }
 
+    @Override
+    public Boolean isExist(String username) {
+        return userJpaRepository.findByUsername(username).isPresent();
+    }
     @Override
     public User deleteUser(Long userId) {
         Optional<User> s = userJpaRepository.findById(userId);
         if (s.isPresent()) {
             userJpaRepository.deleteById(userId);
+            return s.get();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        Optional<User> s = userJpaRepository.findByUsername(username);
+        if (s.isPresent()) {
             return s.get();
         } else {
             return null;
@@ -136,5 +162,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findById(Long id) {
         return userJpaRepository.findById(id);
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        Object currentUsername = SecurityUtils.getSubject().getPrincipal();
+        if (currentUsername == null) {
+            return null;
+        }else{
+            String username = currentUsername.toString();
+            User user = userJpaRepository.findByUsername(username).get();
+            return user.getRoles();
+        }
+    }
+
+    @Override
+    public List<Menu> getMenus() {
+        List<Role> roles = this.getRoles();
+        Set<Menu> set = new HashSet<>();
+
+        if (roles == null) {
+            return null;
+        } else {
+            roles.forEach(i -> set.addAll(i.getMenus()));
+        }
+
+        List<Menu> menus = new ArrayList<>(set);
+
+        menus.forEach(i->{
+            List<Menu> children = menuService.getAllByParentId(i.getId());
+            i.setChildren(children);
+        });
+//      return all menus, including sub-menu
+        //menus.removeIf(i -> i.getParentMenu() != null);
+
+        return menus;
     }
 }
