@@ -28,7 +28,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<User> login(@RequestBody User user, HttpSession session) {
+    public ResponseEntity<User> login(@RequestBody User user) {
         String username = user.getUsername();
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, user.getPassword());
@@ -36,7 +36,7 @@ public class LoginController {
         Object currentUser = subject.getPrincipal();
         try {
             subject.login(token);
-            session.setAttribute("user", user);
+            subject.getSession().setAttribute("user", user);
             User foundUser = userService.findByUsername(username);
             currentUser = subject.getPrincipal();
 

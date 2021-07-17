@@ -5,6 +5,8 @@ package com.academicresearchplatformbackend.interceptor;
 
 import com.academicresearchplatformbackend.dao.User;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +28,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 //        return true;
 
         if (beginWith(page, requiredAuthPages)) {
-            User user = (User) session.getAttribute("user");
+            //
+            // User user = (User) session.getAttribute("user");
+            User user = (User) SecurityUtils.getSubject().getSession().getAttribute("user");
             if (user == null) {
                 response.sendRedirect("login");
                 return false;
