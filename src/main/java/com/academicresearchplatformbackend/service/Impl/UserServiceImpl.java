@@ -69,17 +69,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
         Optional<User> s = userJpaRepository.findByUsername(username);
-        if (s.isPresent()) {
-            return s.get();
-        } else {
-            return null;
-        }
+        return s.orElse(null);
     }
 
     @Override
     public List<User> conditionalQuery(String[] conditions, String[] values) {
         List<User> results = null;
-        System.out.println(Arrays.toString(conditions) + "\n" + values);
+        System.out.println(Arrays.toString(conditions) + "\n" + Arrays.toString(values));
         int i = 0;
         for (String condition : conditions) {
             switch (condition) {
@@ -165,20 +161,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Role> getRoles() {
-        Object currentUsername = SecurityUtils.getSubject().getPrincipal();
-        if (currentUsername == null) {
-            return null;
-        }else{
-            String username = currentUsername.toString();
-            User user = userJpaRepository.findByUsername(username).get();
-            return user.getRoles();
-        }
+    public List<Role> getRolesByUserId(Long id) {
+        //Object currentUsername = SecurityUtils.getSubject().getPrincipal();
+        //
+        Optional<User> user = this.findById(id);
+        return user.map(User::getRoles).orElse(null);
+
     }
 
     @Override
-    public List<Menu> getMenus() {
-        List<Role> roles = this.getRoles();
+    public List<Menu> getMenusByUserId(Long id) {
+        List<Role> roles = this.getRolesByUserId(id);
         Set<Menu> set = new HashSet<>();
 
         if (roles == null) {

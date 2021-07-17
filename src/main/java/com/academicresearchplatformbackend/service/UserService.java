@@ -18,7 +18,7 @@ public interface UserService {
     List<User> findAll();
     /**
      * 添加一个用户
-     * @param user
+     * @param user user
      * @return 注册成功则返回用户，否则返回null
      */
     User addUser(User user);
@@ -42,7 +42,7 @@ public interface UserService {
 
 
     //    menus
-    List<Role> getRoles();
+    List<Role> getRolesByUserId(Long id);
 
-    List<Menu> getMenus();
+    List<Menu> getMenusByUserId(Long id);
 }

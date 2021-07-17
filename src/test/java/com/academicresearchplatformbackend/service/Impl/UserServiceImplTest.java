@@ -19,7 +19,7 @@ public class UserServiceImplTest {
     @Test
     public void addUser() {
         User user = new User();
-        user.setUsername("test002");
+        user.setUsername("test001");
         user.setPassword("123456");
         userService.addUser(user);
     }

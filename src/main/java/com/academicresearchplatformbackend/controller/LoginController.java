@@ -33,12 +33,12 @@ public class LoginController {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, user.getPassword());
         token.isRememberMe();
-        Object currentUser = subject.getPrincipal();
+        //Object currentUser = subject.getPrincipal();
         try {
             subject.login(token);
-            subject.getSession().setAttribute("user", user);
+            subject.getSession().setAttribute("user", userService.findByUsername(username));
             User foundUser = userService.findByUsername(username);
-            currentUser = subject.getPrincipal();
+            //currentUser = subject.getPrincipal();
 
             return new ResponseEntity<>(foundUser, HttpStatus.OK);
         } catch (UnknownAccountException uae) {

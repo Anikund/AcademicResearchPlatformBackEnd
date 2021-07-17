@@ -69,6 +69,19 @@
             <version>1.7.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring-boot-web-starter</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
+<!--        shiro annotation dependency , maybe incorrect-->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
 
         <!--        junit-->
         <dependency>
