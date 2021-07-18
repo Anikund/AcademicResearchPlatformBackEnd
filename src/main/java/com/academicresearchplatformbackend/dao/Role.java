@@ -1,6 +1,7 @@
 package com.academicresearchplatformbackend.dao;
 
 import lombok.Data;
+import org.apache.shiro.authz.aop.PermissionAnnotationMethodInterceptor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,4 +22,9 @@ public class Role {
             joinColumns = @JoinColumn(name="role_id"),
             inverseJoinColumns = @JoinColumn(name="menu_id"))
     private List<Menu> menus = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name="role_permissions",
+    joinColumns = @JoinColumn(name="role_id"),
+    inverseJoinColumns = @JoinColumn(name="p_id"))
+    private List<Permission> permissions = new ArrayList<>();
 }

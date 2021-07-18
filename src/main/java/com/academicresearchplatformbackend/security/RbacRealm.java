@@ -2,6 +2,7 @@ package com.academicresearchplatformbackend.security;
 
 import com.academicresearchplatformbackend.MO.MiddleResult;
 import com.academicresearchplatformbackend.dao.Menu;
+import com.academicresearchplatformbackend.dao.Permission;
 import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
@@ -47,11 +48,11 @@ public class RbacRealm extends AuthorizingRealm {
             List<Role> roles = userService.getRolesByUserId(user.getId());
             roles.forEach(i -> {
                 s.addRole(i.getName());
-                List<Menu> menus = i.getMenus();
-                menus.forEach(p-> s.addStringPermission(p.getName()));
+                //List<Menu> menus = i.getMenus();
+                List<Permission> permissions = i.getPermissions();
+                permissions.forEach(p-> s.addStringPermission(p.getName()));
             });
         }
-
         return s;
 
     }
@@ -65,8 +66,7 @@ public class RbacRealm extends AuthorizingRealm {
         if (user != null) {
             String password = user.getPassword();
             String salt = user.getSalt();
-            SimpleAuthenticationInfo s = new SimpleAuthenticationInfo(username, password, ByteSource.Util.bytes(salt), getName());
-            return s;
+            return new SimpleAuthenticationInfo(username, password, ByteSource.Util.bytes(salt), getName());
         } else {
             throw new AuthenticationException();
         }
