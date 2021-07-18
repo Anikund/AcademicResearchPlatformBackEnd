@@ -44,12 +44,15 @@ public class MenuController {
     public List<Menu> getAllMenus() {
         return menuService.getAllMenus();
     }
-    @RequiresRoles("common researcher")
+    //@RequiresRoles("common researcher")
     @GetMapping("/menusByUser")
     public ResponseEntity<List<Menu>> getMenusByCurrentUser() {
         //MyUtils authenticationUtils = new MyUtils();
         Subject subject = SecurityUtils.getSubject();
-        if (!subject.hasRole("common researcher")) {
+        if (!subject.hasRole("researcher")) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (!subject.isPermitted("test")) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         MiddleResult<User> mr = authenticationUtils.getCurrentAuthenticatedUser();

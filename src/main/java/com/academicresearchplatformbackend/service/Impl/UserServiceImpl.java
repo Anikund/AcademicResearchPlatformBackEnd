@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService {
         this.userJpaRepository = userJpaRepository;
     }
 
+    @Autowired
+    private void setMenuService(MenuService menuService) {
+        this.menuService = menuService;
+    }
+
     //------------------------------------------
     @Override
     public List<User> findAll(int page, int size) {
@@ -185,6 +190,7 @@ public class UserServiceImpl implements UserService {
         menus.forEach(i->{
             List<Menu> children = menuService.getAllByParentId(i.getId());
             i.setChildren(children);
+            System.out.println("dsadsfa");
         });
 //      return all menus, including sub-menu
         //menus.removeIf(i -> i.getParentMenu() != null);

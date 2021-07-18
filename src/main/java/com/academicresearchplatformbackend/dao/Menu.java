@@ -1,5 +1,6 @@
 package com.academicresearchplatformbackend.dao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.aspectj.weaver.GeneratedReferenceTypeDelegate;
 
@@ -22,8 +23,20 @@ public class Menu {
     @JoinColumn(name = "p_id")
     private Menu parentMenu;//parent menu id
     @Transient
+    @JsonIgnore()
     List<Menu> children;
 
+    public void setChildren(List<Menu> children) {
+        if (children.stream().count() == 0) {
+            this.children = null;
+        }
+        this.children = children;
+    }
+
+    @Override
+    public String toString() {
+        return id.toString() + "," + path + "," + name + "," + displayName + "," + component;
+    }
     @Override
     public boolean equals(Object o) {
         if (o == this) {

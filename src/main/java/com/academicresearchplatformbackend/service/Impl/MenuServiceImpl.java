@@ -28,7 +28,7 @@ public class MenuServiceImpl implements MenuService {
             return null;
         } else {
             all.forEach(i->{
-                if (i.getParentMenu().getId() == pid) {
+                if (i.getParentMenu()!=null && i.getParentMenu().getId() == pid) {
                     result.add(i);
                 }
             });
