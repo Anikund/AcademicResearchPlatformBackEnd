@@ -3,6 +3,7 @@ package com.academicresearchplatformbackend.service;
 import com.academicresearchplatformbackend.dao.Menu;
 import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public interface UserService {
      * @param size 每页数量
      * @return 请求页的用户列表
      */
-    List<User> findAll(int page, int size);
+    Page<User> findAll(int page, int size);
     List<User> findAll();
     /**
      * 添加一个用户

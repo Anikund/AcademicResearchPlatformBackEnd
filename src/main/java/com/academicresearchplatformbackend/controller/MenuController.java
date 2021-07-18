@@ -49,22 +49,25 @@ public class MenuController {
     public ResponseEntity<List<Menu>> getMenusByCurrentUser() {
         //MyUtils authenticationUtils = new MyUtils();
         Subject subject = SecurityUtils.getSubject();
+        /*
         if (!subject.hasRole("researcher")) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (!subject.isPermitted("test")) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+         */
         MiddleResult<User> mr = authenticationUtils.getCurrentAuthenticatedUser();
         if (!mr.isSuccess()) {
             //
             // return new ResponseEntity<String>(mr.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }else{
             User user = mr.getData();
             List<Menu> result = userService.getMenusByUserId(user.getId());
             if (result == null) {
-                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }

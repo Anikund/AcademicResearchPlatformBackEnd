@@ -42,6 +42,7 @@ public class User {
     @NotNull
 //    性别，0代表男性，1代表女性
     private Integer gender;
+    private String job;//职位
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String salt;
 

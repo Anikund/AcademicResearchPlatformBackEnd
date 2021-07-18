@@ -6,7 +6,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +35,19 @@ public class UserController {
     @ApiImplicitParams({@ApiImplicitParam(name = "page", value = "页数", required = true),
             @ApiImplicitParam(name = "size", value = "每页数量", required = true)})
 
-    public List<User> findAllPageable(@RequestParam int page, @RequestParam int size) {
+    public Page<User> findAllPageable(@RequestParam int page, @RequestParam int size) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return null;
+        }
         return userService.findAll(page, size);
     }
 
     @GetMapping("/findAll")
     @ApiOperation(value = "获得所有用户")
     public List<User> findAll() {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return null;
+        }
         return userService.findAll();
     }
 
@@ -46,6 +55,9 @@ public class UserController {
     @ApiOperation(value = "删除用户", notes = "删除用户，删除成功返回删除的用户信息与OK，否则返回NOT FOUND")
     @ApiImplicitParam(name = "userId", value = "用户唯一id", required = true)
     public ResponseEntity<User> deleteUser(@PathVariable Long userId) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return null;
+        }
         User s = userService.deleteUser(userId);
         if (s == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -58,6 +70,9 @@ public class UserController {
     @ApiOperation("添加一个用户")
     @ApiImplicitParam(name = "user", value = "要添加的用户信息")
     public ResponseEntity<User> addUser(@RequestBody User user) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return null;
+        }
         User s = userService.addUser(user);
         if (s == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,6 +95,10 @@ public class UserController {
     @PutMapping("/update")
     @ApiOperation("更新指定的用户")
     public ResponseEntity<String> updateUser(@RequestBody User user) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         Optional<User> opUser = userService.findById(user.getId());
         if (opUser.isPresent()) {
             User s = userService.updateUser(user);
@@ -92,7 +111,7 @@ public class UserController {
             return new ResponseEntity<>("无该用户", HttpStatus.NOT_FOUND);
         }
     }
-
+/*
     @PutMapping("/login")
     @ApiOperation("登录")
     @ApiImplicitParam(name="user", value="登录用户，只需指定其用户名和密码")
@@ -103,4 +122,6 @@ public class UserController {
             return new ResponseEntity<>("用户名或密码错误或不存在", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    */
+
 }

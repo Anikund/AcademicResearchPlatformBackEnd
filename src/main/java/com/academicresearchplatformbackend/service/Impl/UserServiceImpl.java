@@ -11,6 +11,7 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserService {
 
     //------------------------------------------
     @Override
-    public List<User> findAll(int page, int size) {
-        return userJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending())).toList();
+    public Page<User> findAll(int page, int size) {
+        return userJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override
