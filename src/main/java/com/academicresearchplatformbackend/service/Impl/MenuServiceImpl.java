@@ -4,6 +4,8 @@ import com.academicresearchplatformbackend.dao.Menu;
 import com.academicresearchplatformbackend.dao.repository.MenuJpaRepository;
 import com.academicresearchplatformbackend.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,11 +25,11 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Menu> getAllByParentId(Long pid) {
         List<Menu> result = new ArrayList<>();
-        List<Menu> all = menuJpaRepository.findAll();
-        if (all == null) {
+        List<Menu> allMenus = menuJpaRepository.findAll();
+        if (allMenus == null) {
             return null;
         } else {
-            all.forEach(i->{
+            allMenus.forEach(i->{
                 if (i.getParentMenu()!=null && i.getParentMenu().getId() == pid) {
                     result.add(i);
                 }
@@ -39,5 +41,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Menu> getAllMenus() {
         return menuJpaRepository.findAll();
+    }
+
+    @Override
+    public Page<Menu> findAllPageable(int page, int size) {
+        return menuJpaRepository.findAll(PageRequest.of(page, size));
     }
 }

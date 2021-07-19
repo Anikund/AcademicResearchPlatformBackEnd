@@ -1,5 +1,6 @@
 package com.academicresearchplatformbackend.service.Impl;
 
+import com.academicresearchplatformbackend.dao.Menu;
 import com.academicresearchplatformbackend.dao.Permission;
 import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.repository.RoleJpaRepository;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -39,7 +41,43 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    @Override
+    public Role addOne(Role newRole) {
+        return roleJpaRepository.save(newRole);
+//        return newRole;
+    }
 
+    @Override
+    public boolean updateRole(Role role) {
+        Optional<Role> op = roleJpaRepository.findById(role.getId());
+        if (op.isPresent()) {
+            roleJpaRepository.save(role);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateRolePermissions(Long id, List<Permission> permissions) {
+        Optional<Role> op = roleJpaRepository.findById(id);
+        if (op.isPresent()) {
+            op.get().setPermissions(permissions);
+            roleJpaRepository.save(op.get());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setRoleMenus(Long id, List<Menu> menus) {
+        Optional<Role> op = roleJpaRepository.findById(id);
+        if (op.isPresent()) {
+            op.get().setMenus(menus);
+            roleJpaRepository.save(op.get());
+            return true;
+        }
+        return false;
+    }
 
 
 }

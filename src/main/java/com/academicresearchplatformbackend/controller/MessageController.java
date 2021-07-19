@@ -44,7 +44,7 @@ public class MessageController {
         this.myUtils = myUtils;
     }
 
-    @ApiOperation(value = "根据当前用户返回其收到的、所有已读和未读消息列表，若为admin则返回所有消息",
+    @ApiOperation(value = "根据当前用户返回其收到的、所有已读和未读消息列表，若为admin则返回所有消息，需要message:read权限",
             notes = "若无权限则返回状态UNAUTHORIZED，否则返回Page（可为null）")
     @GetMapping("/received")
     //@RequiresAuthentication
@@ -67,7 +67,7 @@ public class MessageController {
     }
 
     @GetMapping("/sent")
-    @ApiOperation(value = "根据当前用户返回其所有已发送的列表，若为admin则返回所有消息",
+    @ApiOperation(value = "根据当前用户返回其所有已发送的列表，若为admin则返回所有消息，需要message:read权限",
             notes = "若无权限则返回状态UNAUTHORIZED，否则返回Page（可为null）")
     //@RequiresAuthentication
     public ResponseEntity<Page<Message>> getSentMessages(@RequestParam int page, @RequestParam int size) {
@@ -89,13 +89,14 @@ public class MessageController {
     }
 
     @PostMapping("/sendMessage")
-    @ApiOperation("发送消息给一个目标用户")
+    @ApiOperation("发送消息给一个目标用户，需要message:send权限")
     @ApiImplicitParams({@ApiImplicitParam(name = "rUsername", value = "接受者用户名"),
             @ApiImplicitParam(name = "content", value = "内容")})
     //@RequiresAuthentication
     public ResponseEntity<String> sendMessageToOne(@RequestParam String rUsername,
                                                    @RequestBody String content) {
-        if (!SecurityUtils.getSubject().isPermitted("message:send")) {
+        if (!SecurityUtils.getSubject().isPermitted("message:send")
+        && !SecurityUtils.getSubject().isPermitted("super")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         User receiver = userService.findByUsername(rUsername);
@@ -111,13 +112,14 @@ public class MessageController {
     }
 
     @PostMapping("/sendMessageToAll")
-    @ApiOperation("发送消息给所有用户（包括他自己）")
+    @ApiOperation("发送消息给所有用户（包括他自己），需要message:send权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "content", value = "内容")})
     //@RequiresAuthentication
     public ResponseEntity<String> sendMessageToAll(@RequestBody String content) {
 //        if(SecurityUtils.getSubject().isPermitted(""))
-        if (!SecurityUtils.getSubject().isPermitted("message:send")) {
+        if (!SecurityUtils.getSubject().isPermitted("message:send")
+        && !SecurityUtils.getSubject().isPermitted("super")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         {

@@ -13,12 +13,19 @@ public class ResearchFeat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String type;//类型
-    private String authors;//作者名字
+    @ManyToMany
+    @JoinTable(name="feat_users",
+            joinColumns = @JoinColumn(name="feat_id"),
+            inverseJoinColumns = @JoinColumn(name="user_id"))
+    private List<User> users;
     private String journalName;//收录期刊/xxx名字
     private Integer citedCount;//被引用数量
     private String description;//简介
     private String level;//级别
-//    @OneToMany
-//    private List<FileResource> resources;
+    @ManyToMany
+    @JoinTable(name="feat_resources",
+            joinColumns = @JoinColumn(name="feat_id"),
+            inverseJoinColumns = @JoinColumn(name="resource_id"))
+    private List<FileResource> resources= new ArrayList<>();
 //
 }

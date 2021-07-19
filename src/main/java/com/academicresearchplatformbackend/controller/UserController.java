@@ -21,7 +21,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("/user")
-@Api("UserController")
+@Api("UserController, 此下所有api均需要super权限")
 public class UserController {
     private UserService userService;
 
@@ -56,7 +56,7 @@ public class UserController {
     @ApiImplicitParam(name = "userId", value = "用户唯一id", required = true)
     public ResponseEntity<User> deleteUser(@PathVariable Long userId) {
         if (!SecurityUtils.getSubject().isPermitted("super")) {
-            return null;
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         User s = userService.deleteUser(userId);
         if (s == null) {
@@ -71,7 +71,7 @@ public class UserController {
     @ApiImplicitParam(name = "user", value = "要添加的用户信息")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         if (!SecurityUtils.getSubject().isPermitted("super")) {
-            return null;
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         User s = userService.addUser(user);
         if (s == null) {
@@ -80,6 +80,22 @@ public class UserController {
             return new ResponseEntity<>(s, HttpStatus.OK);
         }
     }
+
+    @GetMapping("/find/{id}")
+    @ApiOperation("根据id查询用户")
+    @ApiImplicitParam(name = "id", value = "id")
+    public ResponseEntity<User> getOneById(@PathVariable Long id) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Optional<User> s = userService.findById(id);
+        if (s.isPresent()) {
+            return new ResponseEntity<>(s.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
 
     @GetMapping("/query/{conditions}/{values}")
     @ApiOperation("条件查询")
@@ -93,7 +109,7 @@ public class UserController {
 
 
     @PutMapping("/update")
-    @ApiOperation("更新指定的用户")
+    @ApiOperation("更新指定的用户，需要传入整个用户信息，先查该用户，再在此基础上改，通过直接赋值实现的更新")
     public ResponseEntity<String> updateUser(@RequestBody User user) {
         if (!SecurityUtils.getSubject().isPermitted("super")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -111,17 +127,5 @@ public class UserController {
             return new ResponseEntity<>("无该用户", HttpStatus.NOT_FOUND);
         }
     }
-/*
-    @PutMapping("/login")
-    @ApiOperation("登录")
-    @ApiImplicitParam(name="user", value="登录用户，只需指定其用户名和密码")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        if (userService.authentication(user.getUsername(), user.getPassword())) {
-            return new ResponseEntity<>("成功", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("用户名或密码错误或不存在", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    */
 
 }

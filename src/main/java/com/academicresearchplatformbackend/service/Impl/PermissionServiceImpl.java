@@ -58,4 +58,9 @@ public class PermissionServiceImpl implements PermissionService {
         permissionJpaRepository.save(p);
     }
 
+    @Override
+    public Page<Permission> findAllPageable(int page, int size) {
+        return permissionJpaRepository.findAll(PageRequest.of(page, size));
+    }
+
 }

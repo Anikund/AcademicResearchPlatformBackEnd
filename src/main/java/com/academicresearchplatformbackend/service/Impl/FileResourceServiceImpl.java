@@ -4,8 +4,11 @@ import com.academicresearchplatformbackend.dao.FileResource;
 import com.academicresearchplatformbackend.dao.repository.FileResourceJpaRepository;
 import com.academicresearchplatformbackend.service.FileResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Service
@@ -18,8 +21,8 @@ public class FileResourceServiceImpl implements FileResourceService {
         this.fileResourceJpaRepository = repository;
     }
     @Override
-    public void add(FileResource fileResource) {
-        fileResourceJpaRepository.save(fileResource);
+    public FileResource add(FileResource fileResource) {
+        return fileResourceJpaRepository.save(fileResource);
     }
 
     @Override
@@ -46,5 +49,15 @@ public class FileResourceServiceImpl implements FileResourceService {
             r.setUrl(url);
             fileResourceJpaRepository.save(r);
         }
+    }
+
+    @Override
+    public Optional<FileResource> findById(Long id) {
+        return fileResourceJpaRepository.findById(id);
+    }
+
+    @Override
+    public Page<FileResource> findAllPageable(int page, int size) {
+        return fileResourceJpaRepository.findAll(PageRequest.of(page, size));
     }
 }
