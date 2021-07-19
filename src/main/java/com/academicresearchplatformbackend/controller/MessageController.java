@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/message/user")
-@Api("MessageController")
+@Api("MessageController，里面所有api都需要登录")
 public class MessageController {
     private MessageService messageService;
     private UserService userService;

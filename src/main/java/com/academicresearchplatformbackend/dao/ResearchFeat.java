@@ -22,6 +22,7 @@ public class ResearchFeat {
     private Integer citedCount;//被引用数量
     private String description;//简介
     private String level;//级别
+    private boolean isPatent;//是否为专利
     @ManyToMany
     @JoinTable(name="feat_resources",
             joinColumns = @JoinColumn(name="feat_id"),

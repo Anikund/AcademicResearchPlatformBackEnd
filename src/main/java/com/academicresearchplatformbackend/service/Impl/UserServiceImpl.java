@@ -198,4 +198,14 @@ public class UserServiceImpl implements UserService {
 
         return menus;
     }
+
+    @Override
+    public boolean setRoles(Long uid, List<Role> roles) {
+        Optional<User> op = this.findById(uid);
+        if (op.isPresent()) {
+            op.get().setRoles(roles);
+            return true;
+        }
+        return false;
+    }
 }

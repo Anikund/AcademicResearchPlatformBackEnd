@@ -26,7 +26,7 @@ public class ResearchProject {
     private Integer leftFund;//剩余经费
     private Timestamp midwayTime;//中期检查时间
     private Boolean isTerminated;//
-
+    private boolean waitingFund;
 
     @ManyToMany
     @JoinTable(name="project_resources",
@@ -52,6 +52,10 @@ public class ResearchProject {
         applyTime = new Timestamp(new Date().getTime());
         isTerminated = false;
         isPending = true;
+        cost = 0;
+        fund = null;
+        leftFund = null;
+        waitingFund = true;
 
     }
 }

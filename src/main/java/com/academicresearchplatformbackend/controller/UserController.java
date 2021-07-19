@@ -1,5 +1,6 @@
 package com.academicresearchplatformbackend.controller;
 
+import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
 import io.swagger.annotations.Api;
@@ -96,7 +97,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/query/{conditions}/{values}")
     @ApiOperation("条件查询")
     @ApiImplicitParams({
@@ -104,6 +104,9 @@ public class UserController {
             @ApiImplicitParam(name = "values", value = "查询值", required = true)
     })
     public List<User> conditionalQuery(@PathVariable String[] conditions, @PathVariable String[] values) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return null;
+        }
         return userService.conditionalQuery(conditions, values);
     }
 
@@ -128,4 +131,15 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update/roles/{uid}")
+    @ApiOperation("更新uid所指向的用户的角色列表")
+    @ApiImplicitParam(name = "roles", value = "要更新成的角色列表，先查角色，查完了选，选完了原封不动传回")
+    public ResponseEntity<String> updateRolesById(@PathVariable Long uid,
+                                                  @RequestBody List<Role> roles) {
+        if (!SecurityUtils.getSubject().isPermitted("super")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        userService.setRoles(uid, roles);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -4,6 +4,7 @@ import com.academicresearchplatformbackend.MO.MiddleResult;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
+import io.swagger.annotations.Api;
 import org.apache.commons.collections.functors.ExceptionPredicate;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("/login")
+@Api("Login Controller")
 public class LoginController {
     private UserService userService;
     @Autowired

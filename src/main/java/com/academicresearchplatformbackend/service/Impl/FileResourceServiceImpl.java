@@ -52,6 +52,16 @@ public class FileResourceServiceImpl implements FileResourceService {
     }
 
     @Override
+    public boolean update(FileResource resource) {
+        Optional<FileResource> op = fileResourceJpaRepository.findById(resource.getId());
+        if (op.isPresent()) {
+            fileResourceJpaRepository.save(resource);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public Optional<FileResource> findById(Long id) {
         return fileResourceJpaRepository.findById(id);
     }

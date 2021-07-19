@@ -4,6 +4,8 @@ import com.academicresearchplatformbackend.dao.FileResource;
 import com.academicresearchplatformbackend.dao.ResearchProject;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+import java.util.Optional;
 
 
 public interface ResearchProjectService {
@@ -29,4 +31,9 @@ public interface ResearchProjectService {
 
     Page<ResearchProject> findAllPageable(int page, int size);
 
+    List<ResearchProject> findAll();
+
+    Optional<ResearchProject> findById(Long id);
+    boolean assignFund(Long pid, int amout);
+    boolean consumeFund(Long pid, int amount);
 }

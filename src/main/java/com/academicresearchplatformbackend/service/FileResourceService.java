@@ -14,6 +14,8 @@ public interface FileResourceService {
 
     void updateUrl(Long id, String url);
 
+    boolean update(FileResource resource);
+
     Optional<FileResource> findById(Long id);
 
     Page<FileResource> findAllPageable(int page, int size);

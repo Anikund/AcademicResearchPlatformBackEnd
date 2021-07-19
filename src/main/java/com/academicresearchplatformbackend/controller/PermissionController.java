@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/permission")
-@Api("RoleController，里面所有的api都需要super权限")
+@Api("Permission Controller，里面的所有api都需要登录")
 public class PermissionController {
     private PermissionService permissionService;
 
@@ -24,13 +24,13 @@ public class PermissionController {
     }
 
     @GetMapping("/all")
-    @ApiOperation("获得所有的权限列表")
+    @ApiOperation("获得所有的权限列表，谁都能获得")
     public ResponseEntity<Page<Permission>> getAllPermissionsPageable(
             @RequestParam int page, @RequestParam int size
-    ) {
+    ) {/*
         if (SecurityUtils.getSubject().isPermitted("super")) {
             return new ResponseEntity<>(permissionService.findAllPageable(page, size), HttpStatus.OK);
-        }
+        }*/
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 

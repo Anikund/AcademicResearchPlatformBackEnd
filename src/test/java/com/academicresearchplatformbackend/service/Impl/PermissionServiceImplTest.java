@@ -18,7 +18,26 @@ public class PermissionServiceImplTest {
     public void addPermission() {
         permissionService.addPermission("message:read");
         permissionService.addPermission("message:send");
-        permissionService.addPermission("message:super");
+        permissionService.addPermission("super");
+        permissionService.addPermission("project:create");
+        permissionService.addPermission("project:update");
+        permissionService.addPermission("project:censor");
+        permissionService.addPermission("project:terminate");
+        permissionService.addPermission("project:assign");
+        permissionService.addPermission("project:consumefund");
+        permissionService.addPermission("project:view");
+        permissionService.addPermission("organization:create");
+        permissionService.addPermission("organization:update");
+        permissionService.addPermission("organization:setprincipal");
+        permissionService.addPermission("feat:delete");
+        permissionService.addPermission("feat:update");
+        permissionService.addPermission("feat:create");
+        permissionService.addPermission("resource:update");
+        permissionService.addPermission("resource:create");
+        permissionService.addPermission("lecture:delete");
+        permissionService.addPermission("lecture:create");
+        permissionService.addPermission("lecture:attend");
+        permissionService.addPermission("lecture:update");
 
     }
 }

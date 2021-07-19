@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -147,6 +148,9 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
         Optional<ResearchProject> op = researchProjectJpaRepository.findById(id);
         if (op.isPresent()) {
             //researchProjectJpaRepository.save(project);
+            if (op.get().getMidwayTime() == null) {
+                return -999;
+            }
             int days = (int) TimeUnit.MILLISECONDS.toDays(
                     System.currentTimeMillis() -
                             op.get().getMidwayTime().getTime()
@@ -162,6 +166,9 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
 
         if (op.isPresent()) {
             //researchProjectJpaRepository.save(project);
+            if (op.get().getTerminatingTime() == null) {
+                return -999;
+            }
             int days = (int) TimeUnit.MILLISECONDS.toDays(
                     System.currentTimeMillis() -
                             op.get().getTerminatingTime().getTime()
@@ -174,6 +181,45 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
     @Override
     public Page<ResearchProject> findAllPageable(int page, int size) {
         return researchProjectJpaRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
+    public List<ResearchProject> findAll() {
+        return researchProjectJpaRepository.findAll();
+    }
+
+    @Override
+    public Optional<ResearchProject> findById(Long id) {
+        return researchProjectJpaRepository.findById(id);
+    }
+
+    @Override
+    public boolean assignFund(Long pid, int amount) {
+        Optional<ResearchProject> op = researchProjectJpaRepository.findById(pid);
+        if (op.isPresent()) {
+            if (op.get().isWaitingFund()) {
+                op.get().setFund(amount);
+                op.get().setLeftFund(amount);
+                researchProjectJpaRepository.save(op.get());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean consumeFund(Long pid, int amount) {
+        Optional<ResearchProject> op = researchProjectJpaRepository.findById(pid);
+        if (op.isPresent()) {
+            ResearchProject project = op.get();
+            if (project.getLeftFund() >= amount) {
+                project.setCost(project.getCost() + amount);
+                project.setLeftFund(project.getLeftFund() - amount);
+                researchProjectJpaRepository.save(project);
+                return true;
+            }
+        }
+        return false;
     }
 
 

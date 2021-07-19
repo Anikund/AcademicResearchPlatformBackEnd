@@ -13,4 +13,10 @@ public interface OrganizationService {
     Optional<Organization> getById(Long id);
 
     Optional<Organization> getByName(String name);
+
+    boolean setPrincipal(Long oid, Long uid);
+
+    boolean update(Long id, String fieldName, String newValue);
+
+    Organization addOne(Organization organization);
 }

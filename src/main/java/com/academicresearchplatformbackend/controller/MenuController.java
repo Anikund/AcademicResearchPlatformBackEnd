@@ -6,6 +6,7 @@ import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.MenuService;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
+import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/menus")
+@Api("MenuController")
 public class MenuController {
     private MenuService menuService;
     private UserService userService;

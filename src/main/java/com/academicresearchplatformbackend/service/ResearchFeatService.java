@@ -12,13 +12,19 @@ public interface ResearchFeatService {
 
     boolean deleteOne(Long id);
 
-    boolean updateType(ResearchFeat newFeat);
+    boolean update(ResearchFeat newFeat);
 
     boolean addOneResource(Long id, FileResource resource);
+
+    boolean addOneResource(Long fid, Long rid);
 
     Optional<ResearchFeat> findById(Long id);
 
     Page<ResearchFeat> findAllPageable(int page, int size);
 
+    Page<ResearchFeat> findByType(String type, int page, int size);
 
+    Page<ResearchFeat> findByLevel(int level, int page, int size);
+
+    Page<ResearchFeat> findByIsPatent(boolean isPatent, int page, int size);
 }
