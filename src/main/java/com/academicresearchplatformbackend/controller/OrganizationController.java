@@ -6,6 +6,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/organization")
 @Api("OrganizationController，里面所有api都需要登录")
+@Log4j2
 public class OrganizationController {
     private OrganizationService organizationService;
 
@@ -36,8 +38,10 @@ public class OrganizationController {
                                                              @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求获得组织信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        log.info("用户:"+subject.getPrincipal().toString()+"请求获得所有组织信息");
         return new ResponseEntity<>(organizationService.getAllPageable(page, size), HttpStatus.OK);
     }
 
@@ -46,13 +50,16 @@ public class OrganizationController {
     public ResponseEntity<Organization> getById(@PathVariable Long id) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求获得组织信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Optional<Organization> op = organizationService.getById(id);
         if (op.isPresent()) {
             Organization result = op.get();
+            log.info("用户:"+subject.getPrincipal().toString()+"请求获得组织(id="+id+")信息");
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
+        log.info("不存在id为" + id + "的组织");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -61,13 +68,18 @@ public class OrganizationController {
     public ResponseEntity<Organization> getById(@PathVariable String name) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求获得组织信息");
+
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Optional<Organization> op = organizationService.getByName(name);
         if (op.isPresent()) {
             Organization result = op.get();
+            log.info("用户:"+subject.getPrincipal().toString()+"请求获得组织(名字="+name+")信息");
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
+        log.info("不存在名字为\"" + name + "\"的组织");
+
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -77,8 +89,10 @@ public class OrganizationController {
     public ResponseEntity<Organization> addOne(@RequestBody Organization organization) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("organization:create")) {
+            log.info("用户："+subject.getPrincipal().toString()+"创建新的组织");
             return new ResponseEntity<>(organizationService.addOne(organization), HttpStatus.OK);
         }
+        log.info("当前用户无organization:create权限，无法创建组织");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
@@ -96,10 +110,14 @@ public class OrganizationController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("organization:update")) {
             if (organizationService.update(id, field, value)) {
+                log.info("用户:"+subject.getPrincipal().toString()+"更新组织(id="+id+")的\""+field+"\"字段的值为:"+value);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+"更新组织信息失败");
+
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        log.info("用户没有organization:update权限");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -110,8 +128,11 @@ public class OrganizationController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("organization:setprincipal")) {
             organizationService.setPrincipal(oid, uid);
+            log.info("用户:"+subject.getPrincipal().toString()+"更新组织(id="+oid+")的负责人为id="+uid+"的用户");
             return new ResponseEntity<>(HttpStatus.OK);
         }
+        log.info("用户没有organization:setprincipal权限");
+
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }

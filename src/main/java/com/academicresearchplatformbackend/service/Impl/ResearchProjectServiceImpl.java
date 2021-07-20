@@ -151,11 +151,10 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
             if (op.get().getMidwayTime() == null) {
                 return -999;
             }
-            int days = (int) TimeUnit.MILLISECONDS.toDays(
+            return (int) TimeUnit.MILLISECONDS.toDays(
                     System.currentTimeMillis() -
                             op.get().getMidwayTime().getTime()
             );
-            return days;
         }
         return -999;
     }
@@ -169,11 +168,10 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
             if (op.get().getTerminatingTime() == null) {
                 return -999;
             }
-            int days = (int) TimeUnit.MILLISECONDS.toDays(
+            return (int) TimeUnit.MILLISECONDS.toDays(
                     System.currentTimeMillis() -
                             op.get().getTerminatingTime().getTime()
             );
-            return days;
         }
         return -999;
     }
@@ -221,6 +219,21 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
                 project.setLeftFund(project.getLeftFund() - amount);
                 researchProjectJpaRepository.save(project);
                 return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean midExamine(Long pid) {
+        Optional<ResearchProject> op = researchProjectJpaRepository.findById(pid);
+        if (op.isPresent()) {
+            ResearchProject project = op.get();
+            if (project.getIsMidExaminedSuccess()) {
+                return false;
+            } else {
+                op.get().setIsMidExaminedSuccess(true);
+                researchProjectJpaRepository.save(op.get());
             }
         }
         return false;

@@ -10,6 +10,7 @@ import com.academicresearchplatformbackend.utils.MyUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RequestMapping("/project")
 @Api("MessageController，里面所有api都需要登录")
+@Log4j2
 public class ResearchProjectController {
     private ResearchProjectService researchProjectService;
     private MessageService messageService;
@@ -61,10 +63,18 @@ public class ResearchProjectController {
                                                                 @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("project:view")) {
+            log.info("用户：" + subject.getPrincipal().toString() + "请求所有项目信息");
             return new ResponseEntity<>(researchProjectService.findAllPageable(page, size), HttpStatus.OK);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求查看项目信息");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备projcet:view权限无法查看项目信息");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
     @PostMapping("/add")
     @ApiOperation("对应创建一个新的项目，自动向负责人发送审核的消息，需要project:create权限")
     @ApiImplicitParam(name = "project", value = "要添加的项目，其中用户必须放入当前用户，剩余的成果与文件可以以后添加")
@@ -73,12 +83,24 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
+            log.info("用户:"+subject.getPrincipal().toString()+" 创建了一个新的项目，项目信息如下：\n"+project.toString());
             ResearchProject p = researchProjectService.addOne(project);
             User user = userService.findByUsername(subject.getPrincipal().toString());
+            if (user.getOrganization() == null) {
+                return new ResponseEntity<>(p, HttpStatus.OK);
+            }
             Long rid = user.getOrganization().getPrincipal().getId();
             Long sid = user.getId();
+
             messageService.sendMessage(rid, sid, "你有新的项目待审核，请查看");
+            log.info("审核项目信息已发送给相应管理人员");
             return new ResponseEntity<>(p, HttpStatus.OK);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求添加项目信息");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:create权限无法创建项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -89,10 +111,21 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            if (researchProjectService.update(project))
+            if (researchProjectService.update(project)) {
+                log.info("用户:"+subject.getPrincipal()+" 修改id="+project.getId()+"的项目信息为:\n"+project.toString());
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal()+" 修改id="+project.getId()+"的项目信息失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求修改文件信息");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:update权限无法修改项目");
+        }
+
+
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -103,9 +136,18 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            if (researchProjectService.addUser(pid, uid))
+            if (researchProjectService.addUser(pid, uid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 为id="+pid+"的项目增加一位参与人员，其id=:"+uid);
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 为id="+pid+"的项目增加一位参与人员，其id=:"+uid+",操作失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求添加一个参与者");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:update权限无法修改项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -117,9 +159,18 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            if (researchProjectService.addFeat(pid, fid))
+            if (researchProjectService.addFeat(pid, fid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 为id="+pid+"的项目增加一项已有科研成果，其id=:"+fid);
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 为id="+pid+"的项目增加一项已有科研成果，其id=:"+fid+",操作失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求添加科研成果到项目");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:update权限无法修改项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -132,9 +183,18 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            if (researchProjectService.addResource(pid, fileResource))
+            if (researchProjectService.addResource(pid, fileResource)) {
+                log.info("用户:" + subject.getPrincipal().toString() + " 为id=" + pid + "的项目增加一项文件资源，其信息为:" + fileResource.toString());
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:" + subject.getPrincipal().toString() + " 为id=" + pid + "的项目增加一项文件资源，操作失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求添加文件资源");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:update权限无法修改项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -146,9 +206,17 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            if (researchProjectService.addResource(pid, rid))
+            if (researchProjectService.addResource(pid, rid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 向项目(id="+pid+")中添加一项已有文件资源(id="+rid+")");
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 向项目(id="+pid+")中添加一项已有文件资源(id="+rid+")，失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求添加文件资源");
+        } else {
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:update权限无法修改项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -159,9 +227,17 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:censor")) {
-            if (researchProjectService.censor(pid))
+            if (researchProjectService.censor(pid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 审查通过了项目(id="+pid+")");
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 审查项目(id="+pid+")失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求审查项目");
+        } else {
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:censor权限无法审查项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 //        researchProjectService.censor(pid);
@@ -173,21 +249,26 @@ public class ResearchProjectController {
                                                                    @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求项目信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         User user = userService.findByUsername(subject.getPrincipal().toString());
         Long userId = user.getId();
         List<ResearchProject> allProjects = researchProjectService.findAll();
         HashSet<ResearchProject> result = new HashSet<>();
-        allProjects.forEach(i -> {
-            i.getUsers().forEach(u -> {
-                if (u.getId() == userId) {
-                    result.add(i);
-                }
-            });
-        });
+        allProjects.forEach(i -> i.getUsers().forEach(u -> {
+            if (u.getId().equals(userId) ) {
+                result.add(i);
+            }
+        }));
+
         List<ResearchProject> listResult = result.stream().collect(Collectors.toList());
+
         Page<ResearchProject> pageResult = myUtils.listConvertToPage(listResult, PageRequest.of(page, size));
+        if (pageResult == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        log.info("用户："+user.getUsername()+"请求其参加的项目信息");
         return new ResponseEntity<>(pageResult, HttpStatus.OK);
 //        Page<ResearchProject> pageResult = new PageImpl<ResearchProject>();
     }
@@ -198,9 +279,11 @@ public class ResearchProjectController {
     public ResponseEntity<Integer> getDaysToProjectMid(@PathVariable Long pid) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求项目信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         int days = researchProjectService.daysToMidwayTime(pid);
+        log.info("用户:"+subject.getPrincipal().toString()+" 请求项目id="+pid+"的项目从当前日期到其中期检查日期的差值");
         return new ResponseEntity<>(days, HttpStatus.OK);
     }
 
@@ -210,9 +293,11 @@ public class ResearchProjectController {
     public ResponseEntity<Integer> getDaysToProjectEnd(@PathVariable Long pid) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求项目信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         int days = researchProjectService.daysToTerminatingTime(pid);
+        log.info("用户:"+subject.getPrincipal().toString()+" 请求项目id="+pid+"的项目从当前日期到其截止检查日期的差值");
         return new ResponseEntity<>(days, HttpStatus.OK);
     }
 
@@ -223,9 +308,18 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:terminate")) {
-            if (researchProjectService.terminate(pid))
+            if (researchProjectService.terminate(pid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 请求终止项目(id="+pid+")");
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 请求终止项目(id="+pid+")失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求终止项目(id="+pid+")");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:terminate权限，无法终止项目");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
@@ -238,10 +332,18 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("project:assign")) {
             if (researchProjectService.assignFund(pid, amount)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 赋予项目(id="+pid+")资金"+amount+"元");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+" 赋予项目(id="+pid+")资金"+amount+"元，失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求赋予项目(id="+pid+")资金");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:assign权限，无法赋予项目资金");
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -257,15 +359,47 @@ public class ResearchProjectController {
             if (project.isPresent()) {
                 if (project.get().getUsers().contains(user)) {
                     if (researchProjectService.consumeFund(pid, amount)) {
+                        log.info("用户:"+subject.getPrincipal().toString()+" 消耗项目(id="+pid+")资金"+amount+"元");
                         return new ResponseEntity<>(HttpStatus.OK);
                     }
+                    log.info("用户:"+subject.getPrincipal().toString()+" 消耗项目(id="+pid+")资金"+amount+"元，失败");
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+                log.info("用户:"+subject.getPrincipal().toString()+" 消耗项目(id="+pid+")资金"+amount+"元失败，因该项目中不包含此人");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+" 消耗项目(id="+pid+")资金"+amount+"元失败，因无法找到id为"+pid+"的项目");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求消耗项目(id="+pid+")的资金");
+        } else {
+
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:consume权限，无法消耗项目资金");
+        }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    @PutMapping("/censor/mid/{pid}")
+    @ApiOperation("中期检查项目，项目由pid（id）属性指定，需要project:censor权限")
+    public ResponseEntity<String> midExamineProject(@PathVariable Long pid) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isPermitted("super") ||
+                subject.isPermitted("project:censor")) {
+            if (researchProjectService.midExamine(pid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+" 让id为"+pid+"的项目通过了中期检查");
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            log.info("用户:"+subject.getPrincipal().toString()+" 欲让id为"+pid+"的项目通过中期检查，失败");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户请求通过中期检查项目(id="+pid+")");
+        } else {
+            log.info("用户:"+subject.getPrincipal().toString()+" 不具备project:censor权限，无法让其通过中期检查");
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
 }

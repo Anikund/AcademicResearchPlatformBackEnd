@@ -36,4 +36,6 @@ public interface ResearchProjectService {
     Optional<ResearchProject> findById(Long id);
     boolean assignFund(Long pid, int amout);
     boolean consumeFund(Long pid, int amount);
+
+    boolean midExamine(Long pid);
 }

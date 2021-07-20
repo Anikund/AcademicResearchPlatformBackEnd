@@ -25,6 +25,7 @@ public class ResearchProject {
     private Integer cost;//支出
     private Integer leftFund;//剩余经费
     private Timestamp midwayTime;//中期检查时间
+    private Boolean isMidExaminedSuccess;//是否通过中期检查
     private Boolean isTerminated;//
     private boolean waitingFund;
 
@@ -56,6 +57,6 @@ public class ResearchProject {
         fund = null;
         leftFund = null;
         waitingFund = true;
-
+        isMidExaminedSuccess = false;
     }
 }

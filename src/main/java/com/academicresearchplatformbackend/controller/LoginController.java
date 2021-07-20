@@ -5,6 +5,8 @@ import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
 import io.swagger.annotations.Api;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.functors.ExceptionPredicate;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/login")
 @Api("Login Controller")
+@Log4j2
 public class LoginController {
     private UserService userService;
     @Autowired
@@ -36,6 +39,7 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<User> login(@RequestBody User user) {
         String username = user.getUsername();
+        log.info("用户名" + username + "尝试登录");
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, user.getPassword());
         token.isRememberMe();
@@ -45,16 +49,19 @@ public class LoginController {
             subject.getSession().setAttribute("user", userService.findByUsername(username));
             User foundUser = userService.findByUsername(username);
             //currentUser = subject.getPrincipal();
-
+            log.info("用户" + foundUser.getUsername() + "，姓名" + foundUser.getName() + "登录成功");
             return new ResponseEntity<>(foundUser, HttpStatus.OK);
         } catch (UnknownAccountException uae) {
             System.out.println("unknown account");
+            log.info("未知账号");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (IncorrectCredentialsException incorrectCredentialsException) {
             System.out.println("incorrect password");
+            log.info("密码错误");
             return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception e) {
             System.out.println("other");
+            log.info("其他原因登录失败");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -70,12 +77,15 @@ public class LoginController {
         }*/
         Subject currentUser = SecurityUtils.getSubject();
         if (currentUser.getPrincipal() == null) {
+            log.info("无用户登录，尝试登出，失败");
             return new ResponseEntity<>("登出失败！", HttpStatus.CONFLICT);
         }
         if (username.equals(currentUser.getPrincipal().toString())) {
             currentUser.logout();
+            log.info("用户" + username + "登出成功");
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
+            log.info("用户登出失败");
             return new ResponseEntity<>("登出失败！", HttpStatus.CONFLICT);
         }
 

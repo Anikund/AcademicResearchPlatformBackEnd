@@ -5,6 +5,7 @@ import com.academicresearchplatformbackend.service.FileResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RequestMapping("/resource")
 @Api("FileResource Controller，里面的所有api都需要登录")
+@Log4j2
 public class FileResourceController {
     private FileResourceService fileResourceService;
 
@@ -31,8 +33,10 @@ public class FileResourceController {
                                                              @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
+            log.info("用户" + subject.getPrincipal().toString() + "请求了所有文件资源");
             return new ResponseEntity<>(fileResourceService.findAllPageable(page, size), HttpStatus.OK);
         }
+        log.info("未授权用户请求文件资源");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -42,8 +46,11 @@ public class FileResourceController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("resource:update")) {
             fileResourceService.update(fileResource);
+            log.info("用户" + subject.getPrincipal().toString() + "更新了一项文件资源，其id为"+fileResource.getId()+"，其更新后的内容为:\n"+
+                    fileResource);
             return new ResponseEntity<>(HttpStatus.OK);
         }
+        log.info("未授权用户请求更新一项文件资源");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -52,8 +59,10 @@ public class FileResourceController {
     public ResponseEntity<FileResource> addOne(FileResource fileResource) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("resource:create")) {
+            log.info("用户：" + subject.getPrincipal().toString() + " 创建了一项文件资源，其内容为:\n" + fileResource.toString());
             return new ResponseEntity<>(fileResourceService.add(fileResource), HttpStatus.OK);
         }
+        log.info("未授权用户请求添加一项文件资源");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -63,8 +72,11 @@ public class FileResourceController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("resource:delete")) {
             fileResourceService.delete(id);
+            log.info("用户:" + subject.getPrincipal().toString() + "删除了id为" + id + "的文件资源");
             return new ResponseEntity<>(HttpStatus.OK);
         }
+        log.info("未授权用户删除一项文件资源");
+
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
@@ -74,9 +86,11 @@ public class FileResourceController {
     public ResponseEntity<String> updateName(@PathVariable Long id, @PathVariable String name) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("resource:update")) {
-            fileResourceService.updateName(id,name);
+            fileResourceService.updateName(id, name);
+            log.info("用户：" + subject.getPrincipal().toString() + "更新了id为" + id + "的资源名字为" + name);
             return new ResponseEntity<>(HttpStatus.OK);
         }
+        log.info("未授权用户请求更新一项文件资源");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

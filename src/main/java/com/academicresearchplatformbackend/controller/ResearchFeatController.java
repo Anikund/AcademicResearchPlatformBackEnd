@@ -10,6 +10,7 @@ import com.academicresearchplatformbackend.utils.MyUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RequestMapping("/feat")
 @Api("ResearchFeatController，里面所有api都需要登录")
+@Log4j2
 public class ResearchFeatController {
     private ResearchFeatService researchFeatService;
     private ResearchProjectService researchProjectService;
@@ -55,9 +57,10 @@ public class ResearchFeatController {
                                                              @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
+            log.info("用户："+subject.getPrincipal().toString()+"请求所有科研成果信息");
             return new ResponseEntity<>(researchFeatService.findAllPageable(page, size), HttpStatus.OK);
         }
-
+        log.info("未登录用户请求科研成果信息");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -67,9 +70,10 @@ public class ResearchFeatController {
                                                                 @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
+            log.info("用户："+subject.getPrincipal().toString()+"请求"+type+"类型的科研成果信息");
             return new ResponseEntity<>(researchFeatService.findByType(type, page, size), HttpStatus.OK);
         }
-
+        log.info("未登录用户请求科研成果信息");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -79,9 +83,10 @@ public class ResearchFeatController {
                                                                   @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
+            log.info("用户："+subject.getPrincipal().toString()+"请求专利类型的科研成果信息");
             return new ResponseEntity<>(researchFeatService.findByIsPatent(isPatent, page, size), HttpStatus.OK);
         }
-
+        log.info("未登录用户请求科研成果中的所有专利信息");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -91,9 +96,10 @@ public class ResearchFeatController {
                                                                  @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
+            log.info("用户："+subject.getPrincipal().toString()+"请求"+level+"级别的科研成果信息");
             return new ResponseEntity<>(researchFeatService.findByLevel(level, page, size), HttpStatus.OK);
         }
-
+        log.info("未登录用户请求科研成果中的所有级别为"+level+"的专利信息");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -103,11 +109,18 @@ public class ResearchFeatController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("feat:delete")) {
             if (researchFeatService.deleteOne(id)) {
+                log.info("用户:"+subject.getPrincipal().toString()+"删除id="+id+"的科研成果");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+"删除id="+id+"的科研成果失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户");
+        }else{
 
+            log.info("用户:"+subject.getPrincipal().toString()+"不具备feat:delete权限");
+        }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -117,11 +130,18 @@ public class ResearchFeatController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("feat:update")) {
             if (researchFeatService.update(feat)) {
+                log.info("用户:"+subject.getPrincipal().toString()+"更新id="+feat.getId()+"的科研成果");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+"更新科研成果失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户");
+        }else{
 
+            log.info("用户:"+subject.getPrincipal().toString()+"不具备feat:update");
+        }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
 
@@ -132,7 +152,14 @@ public class ResearchFeatController {
     public ResponseEntity<ResearchFeat> addOne(@RequestBody ResearchFeat feat) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("feat:create")) {
+            log.info("用户："+subject.getPrincipal().toString()+"创建新的科研成果");
             return new ResponseEntity<>(researchFeatService.addOne(feat), HttpStatus.OK);
+        }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户");
+        }else{
+
+            log.info("用户:"+subject.getPrincipal().toString()+"不具备feat:create");
         }
 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -146,11 +173,18 @@ public class ResearchFeatController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("feat:update")) {
             if (researchFeatService.addOneResource(id, resource)) {
+                log.info("用户:"+subject.getPrincipal().toString()+"为id="+id+"的科研成果添加一项文件资源");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+"为id="+id+"的科研成果添加一项文件资源失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户");
+        }else{
 
+            log.info("用户:"+subject.getPrincipal().toString()+"不具备feat:update");
+        }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -162,11 +196,18 @@ public class ResearchFeatController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") || subject.isPermitted("feat:update")) {
             if (researchFeatService.addOneResource(fid, rid)) {
+                log.info("用户:"+subject.getPrincipal().toString()+"为id="+fid+"的科研成果添加一项已有文件资源(id="+rid+")");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            log.info("用户:"+subject.getPrincipal().toString()+"为id="+fid+"的科研成果添加一项已有文件资源(id="+rid+")失败");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (subject.getPrincipal() == null) {
+            log.info("未登录用户");
+        }else{
 
+            log.info("用户:"+subject.getPrincipal().toString()+"不具备feat:update");
+        }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -177,21 +218,26 @@ public class ResearchFeatController {
                                                                     @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求id="+id+"的科研成果信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         HashSet<ResearchProject> resultSet = new HashSet<>();
         if (subject.isAuthenticated()) {
             List<ResearchProject> allProjects = researchProjectService.findAll();
-            allProjects.forEach(i -> {
-                i.getFeats().forEach(f -> {
-                    if (f.getId() == id) {
-                        resultSet.add(i);
-                    }
-                });
-            });
+            allProjects.forEach(i -> i.getFeats().forEach(f -> {
+                if (f.getId().equals(id)) {
+                    resultSet.add(i);
+                }
+            }));
         }
+
         List<ResearchProject> resultList = resultSet.stream().collect(Collectors.toList());
+
         Page<ResearchProject> resultPage = myUtils.listConvertToPage(resultList, PageRequest.of(page, size));
+        if (resultPage == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        log.info("用户:"+subject.getPrincipal().toString()+"请求id="+id+"的科研成果信息");
         return new ResponseEntity<>(resultPage, HttpStatus.OK);
 
     }
@@ -203,14 +249,17 @@ public class ResearchFeatController {
                                                        @PathVariable Long id) {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.isAuthenticated()) {
+            log.info("未登录用户请求id="+id+"的科研成果信息");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Optional<ResearchFeat> op = researchFeatService.findById(id);
         if (op.isPresent()) {
             List<User> userList = op.get().getUsers();
             Page<User> userPage = myUtils.listConvertToPage(userList, PageRequest.of(page, size));
+            log.info("用户:"+subject.getPrincipal().toString()+" 请求id="+id+"的科研成果信息");
             return new ResponseEntity<>(userPage, HttpStatus.OK);
         }
+        log.info("用户:"+subject.getPrincipal().toString()+" 请求id="+id+"的科研成果信息，未找到该信息");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
