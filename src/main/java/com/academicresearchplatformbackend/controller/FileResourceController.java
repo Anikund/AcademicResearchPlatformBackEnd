@@ -27,8 +27,8 @@ public class FileResourceController {
 
     @GetMapping("/all")
     @ApiOperation("获得所有资源（文件）")
-    public ResponseEntity<Page<FileResource>> getAllPageable(@PathVariable int page,
-                                                             @PathVariable int size) {
+    public ResponseEntity<Page<FileResource>> getAllPageable(@RequestParam int page,
+                                                             @RequestParam int size) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
             return new ResponseEntity<>(fileResourceService.findAllPageable(page, size), HttpStatus.OK);
