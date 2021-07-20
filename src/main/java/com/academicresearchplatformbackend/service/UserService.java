@@ -48,4 +48,6 @@ public interface UserService {
     List<Menu> getMenusByUserId(Long id);
 
     boolean setRoles(Long uid, List<Role> roles);
+
+    boolean addRole(Long uid, Long rid);
 }

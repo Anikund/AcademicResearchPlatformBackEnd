@@ -30,7 +30,7 @@ public class User {
 
     private String name;
     //    角色
-    private UserRole role;
+//    private UserRole role;
 
     public enum UserRole {
         RESEARCHER, SECRETARY, MINISTRY, OFFICER, VERTICAL_ADMIN, HORIZONTAL_ADMIN, OVERLORD

@@ -49,13 +49,13 @@ public class PermissionServiceImpl implements PermissionService {
         }
     }
 
-    public void addPermission(String name) {
+    public Permission addPermission(String name) {
         if (permissionJpaRepository.findByName(name).isPresent()) {
-            return;
+            return null;
         }
         Permission p = new Permission();
         p.setName(name);
-        permissionJpaRepository.save(p);
+        return permissionJpaRepository.save(p);
     }
 
     @Override

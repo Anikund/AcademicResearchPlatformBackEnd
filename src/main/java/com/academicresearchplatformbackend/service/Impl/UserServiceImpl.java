@@ -5,6 +5,7 @@ import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.dao.repository.UserJpaRepository;
 import com.academicresearchplatformbackend.service.MenuService;
+import com.academicresearchplatformbackend.service.RoleService;
 import com.academicresearchplatformbackend.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
     //--------Dependency Injection--------------
     private UserJpaRepository userJpaRepository;
     private MenuService menuService;
+    private RoleService roleService;
     @Autowired
     public void setUserJpaRepository(UserJpaRepository userJpaRepository) {
         this.userJpaRepository = userJpaRepository;
@@ -34,6 +36,10 @@ public class UserServiceImpl implements UserService {
         this.menuService = menuService;
     }
 
+    @Autowired
+    private void RoleService(RoleService roleService) {
+        this.roleService = roleService;
+    }
     //------------------------------------------
     @Override
     public Page<User> findAll(int page, int size) {
@@ -104,7 +110,7 @@ public class UserServiceImpl implements UserService {
                     }else{
                         results.retainAll(userJpaRepository.findByName(values[i++]));
                     }
-                    break;
+                    break;/*
                 case "role":
                     if (i == 0) {
                         results = userJpaRepository.findByRole(User.UserRole.valueOf(values[i]));
@@ -112,7 +118,7 @@ public class UserServiceImpl implements UserService {
                     }else{
                         results.retainAll(userJpaRepository.findByRole(User.UserRole.valueOf(values[i++])));
                     }
-                    break;
+                    break;*/
                 case "email":
                     if (i == 0) {
                         results = userJpaRepository.findByEmail(values[i]);
@@ -207,5 +213,17 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean addRole(Long uid, Long rid) {
+        try {
+            User user = userJpaRepository.getById(uid);
+            user.getRoles().add(roleService.getRoleById(rid));
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

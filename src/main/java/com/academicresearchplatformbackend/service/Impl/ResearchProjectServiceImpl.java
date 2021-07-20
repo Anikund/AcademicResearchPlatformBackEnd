@@ -197,9 +197,13 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
     public boolean assignFund(Long pid, int amount) {
         Optional<ResearchProject> op = researchProjectJpaRepository.findById(pid);
         if (op.isPresent()) {
+            if (!op.get().isWaitingFund()) {
+                return false;
+            }
             if (op.get().isWaitingFund()) {
                 op.get().setFund(amount);
                 op.get().setLeftFund(amount);
+                op.get().setWaitingFund(false);
                 researchProjectJpaRepository.save(op.get());
                 return true;
             }
