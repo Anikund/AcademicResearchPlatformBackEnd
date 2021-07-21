@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
             System.out.println("dsadsfa");
         });
 //      return all menus, including sub-menu
-        //menus.removeIf(i -> i.getParentMenu() != null);
+        menus.removeIf(i -> i.getIsRoot() != true);
 
         return menus;
     }

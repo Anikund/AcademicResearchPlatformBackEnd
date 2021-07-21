@@ -5,6 +5,7 @@ import lombok.Data;
 import org.aspectj.weaver.GeneratedReferenceTypeDelegate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,22 +22,32 @@ public class Menu {
     private String component;//component name
     @OneToOne
     @JoinColumn(name = "p_id")
+    @JsonIgnore
     private Menu parentMenu;//parent menu id
     @Transient
-    @JsonIgnore()
+    //@JsonIgnore()
     List<Menu> children;
-
+    private Boolean isRoot;
     public void setChildren(List<Menu> children) {
+        if (children == null) {
+            return ;
+        }
         if (children.stream().count() == 0) {
             this.children = null;
+            return;
         }
-        this.children = children;
+        this.children = new ArrayList<>();
+        children.forEach(i->{
+            i.setParentMenu(null);
+
+            this.children.add(i);
+        });
     }
 
-    @Override
-    public String toString() {
-        return id.toString() + "," + path + "," + name + "," + displayName + "," + component;
-    }
+    //@Override
+    //public String toString() {
+//        return id.toString() + "," + path + "," + name + "," + displayName + "," + component;
+//    }
     @Override
     public boolean equals(Object o) {
         if (o == this) {
