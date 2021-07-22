@@ -65,7 +65,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (op.isPresent()) {
             Optional<User> opUser = userService.findById(uid);
             if (opUser.isPresent()) {
-                op.get().setPrincipal(opUser.get());
+                op.get().setPrincipal_id(opUser.get().getId());
                 organizationJpaRepository.save(op.get());
                 return true;
             }
@@ -104,10 +104,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Organization addOne(Organization organization) {
+
         if (organizationJpaRepository.findById(organization.getId()).isPresent()) {
             return organizationJpaRepository.findById(organization.getId()).get();
         } else {
             return organizationJpaRepository.save(organization);
         }
+    }
+
+    @Override
+    public User getPrincipal(Long oid) {
+        Optional<Organization> op = this.getById(oid);
+        if (op.isPresent()) {
+            Organization organization = op.get();
+            Optional<User> opUser = userService.findById(organization.getPrincipal_id());
+            if (opUser.isPresent()) {
+                return opUser.get();
+            }
+            return null;
+        }
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.academicresearchplatformbackend.service;
 
 import com.academicresearchplatformbackend.dao.Organization;
+import com.academicresearchplatformbackend.dao.User;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
@@ -19,4 +20,8 @@ public interface OrganizationService {
     boolean update(Long id, String fieldName, String newValue);
 
     Organization addOne(Organization organization);
+
+    default User getPrincipal(Long oid) {
+        return null;
+    }
 }

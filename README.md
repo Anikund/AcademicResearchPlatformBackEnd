@@ -1,4 +1,6 @@
 ###使用方法
+
+
 为了保证数据jpa的更新方式被设置成了update，如果不怕丢失数据可以在application.properties
 里将Jpa方式设置为create（也就是update->create)，防止造成被删除字段仍然保留在数据库中。
 

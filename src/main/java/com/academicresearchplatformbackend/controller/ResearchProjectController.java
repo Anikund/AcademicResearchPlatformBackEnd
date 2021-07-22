@@ -4,6 +4,7 @@ import com.academicresearchplatformbackend.dao.FileResource;
 import com.academicresearchplatformbackend.dao.ResearchProject;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.MessageService;
+import com.academicresearchplatformbackend.service.OrganizationService;
 import com.academicresearchplatformbackend.service.ResearchProjectService;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
@@ -36,7 +37,12 @@ public class ResearchProjectController {
     private MessageService messageService;
     private UserService userService;
     private MyUtils myUtils;
+    private OrganizationService organizationService;
 
+    @Autowired
+    public void setOrganizationService(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
     @Autowired
     public void setMyUtils(MyUtils myUtils) {
         this.myUtils = myUtils;
@@ -83,13 +89,15 @@ public class ResearchProjectController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:create")) {
-            log.info("用户:"+subject.getPrincipal().toString()+" 创建了一个新的项目，项目信息如下：\n"+project.toString());
-            ResearchProject p = researchProjectService.addOne(project);
+            log.info("用户:" + subject.getPrincipal().toString() + " 创建了一个新的项目，项目信息如下：\n" + project.toString());
             User user = userService.findByUsername(subject.getPrincipal().toString());
+            project.getUsers().add(user);
+            ResearchProject p = researchProjectService.addOne(project);
+            //User user = userService.findByUsername(subject.getPrincipal().toString());
             if (user.getOrganization() == null) {
                 return new ResponseEntity<>(p, HttpStatus.OK);
             }
-            Long rid = user.getOrganization().getPrincipal().getId();
+            Long rid = organizationService.getPrincipal(user.getOrganization().getId()).getId();
             Long sid = user.getId();
 
             messageService.sendMessage(rid, sid, "你有新的项目待审核，请查看");

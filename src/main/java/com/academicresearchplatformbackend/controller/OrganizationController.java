@@ -98,7 +98,7 @@ public class OrganizationController {
         if (subject.isPermitted("super") || subject.isPermitted("organization:create")) {
             log.info("用户：" + subject.getPrincipal().toString() + "创建新的组织");
             User user = userService.findByUsername(subject.getPrincipal().toString());
-            organization.setPrincipal(user);
+            organization.setPrincipal_id(user.getId());
             return new ResponseEntity<>(organizationService.addOne(organization), HttpStatus.OK);
         }
         log.info("当前用户无organization:create权限，无法创建组织");
@@ -158,7 +158,7 @@ public class OrganizationController {
         if (op.isPresent()) {
             Organization result = op.get();
             log.info("用户:" + subject.getPrincipal().toString() + "请求获得组织(id=" + oid + ")的负责人");
-            return new ResponseEntity<>(result.getPrincipal(), HttpStatus.OK);
+            return new ResponseEntity<>(organizationService.getPrincipal(result.getId()), HttpStatus.OK);
         }
         log.info("不存在id为" + oid + "的组织");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -18,9 +18,12 @@ public class Organization {
     private String tel;//电话
     private String description;//简介
     private String regulations;//规章制度
-    @OneToOne
-    @JsonIgnore
-    private User principal;//负责人，院系则对应秘书，其他的组织就不知道了
+    //@OneToOne
+    //@JsonIgnore
+    //private User principal;//负责人，院系则对应秘书，其他的组织就不知道了
+    @Column(name="principal_id")
+    private Long principal_id;
+
 
 //    @OneToMany
 //    private List<ResearchProject> projects;//项目，项目里有成果和文件
