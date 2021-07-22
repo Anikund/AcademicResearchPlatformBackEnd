@@ -1,6 +1,7 @@
 package com.academicresearchplatformbackend.controller;
 
 import com.academicresearchplatformbackend.MO.MiddleResult;
+import com.academicresearchplatformbackend.MO.SessionWrapper;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
@@ -12,7 +13,10 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.mgt.DefaultSessionManager;
+import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.session.mgt.WebSessionManager;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +33,14 @@ import java.util.Optional;
 @Log4j2
 public class LoginController {
     private UserService userService;
-    @Autowired
+
     private MyUtils myUtils;
+
+    @Autowired
+    public void setMyUtils(MyUtils myUtils) {
+        this.myUtils = myUtils;
+    }
+
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
@@ -44,6 +54,7 @@ public class LoginController {
         UsernamePasswordToken token = new UsernamePasswordToken(username, user.getPassword());
         token.isRememberMe();
         //Object currentUser = subject.getPrincipal();
+        //SessionKey key = new DefaultSessionManager().getSessionDAO().getActiveSessions();
         try {
             subject.login(token);
             subject.getSession().setAttribute("user", userService.findByUsername(username));
@@ -62,6 +73,7 @@ public class LoginController {
         } catch (Exception e) {
             System.out.println("other");
             log.info("其他原因登录失败");
+            System.out.println(e.toString());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -86,6 +98,7 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             log.info("用户登出失败");
+
             return new ResponseEntity<>("登出失败！", HttpStatus.CONFLICT);
         }
 

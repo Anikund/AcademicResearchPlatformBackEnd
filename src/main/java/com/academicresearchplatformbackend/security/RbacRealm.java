@@ -7,10 +7,7 @@ import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
 import com.academicresearchplatformbackend.service.UserService;
 import com.academicresearchplatformbackend.utils.MyUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -58,10 +55,13 @@ public class RbacRealm extends AuthorizingRealm {
     }
 
 
-
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+//        if (!(authenticationToken instanceof UsernamePasswordToken)) {
+//            return null;
+//        }
         String username = authenticationToken.getPrincipal().toString();
+
         User user = userService.findByUsername(username);
         if (user != null) {
             String password = user.getPassword();

@@ -113,7 +113,7 @@ public class ResearchProjectController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @ApiOperation("修改id所对应的项目信息，先查再改，需要project:update权限")
     public ResponseEntity<String> updateOne(@RequestBody ResearchProject project) {
         Subject subject = SecurityUtils.getSubject();
