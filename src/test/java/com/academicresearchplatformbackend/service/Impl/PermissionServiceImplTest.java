@@ -50,6 +50,7 @@ public class PermissionServiceImplTest {
         permissionService.addPermission("lecture:update");
         Role adminRole = new Role();
         adminRole.setPermissions(Arrays.asList(adminPermission));
+        adminRole.setName("admin");
 
         roleService.addOne(adminRole);
 

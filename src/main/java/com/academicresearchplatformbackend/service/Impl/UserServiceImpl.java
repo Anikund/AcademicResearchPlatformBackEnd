@@ -160,6 +160,9 @@ public class UserServiceImpl implements UserService {
         Long id = user.getId();
         Optional<User> s = userJpaRepository.findById(id);
         if (s.isPresent()) {
+            user.setPassword(s.get().getPassword());
+            user.setSalt(s.get().getSalt());
+
             userJpaRepository.save(user);
             return user;
         } else {

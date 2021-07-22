@@ -1,5 +1,6 @@
 package com.academicresearchplatformbackend.dao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Data;
 
@@ -18,8 +19,11 @@ public class Organization {
     private String description;//简介
     private String regulations;//规章制度
     @OneToOne
+    @JsonIgnore
     private User principal;//负责人，院系则对应秘书，其他的组织就不知道了
+
 //    @OneToMany
 //    private List<ResearchProject> projects;//项目，项目里有成果和文件
+
 
 }
