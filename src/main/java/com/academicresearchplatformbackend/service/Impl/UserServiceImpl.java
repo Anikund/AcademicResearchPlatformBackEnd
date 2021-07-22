@@ -59,8 +59,8 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = new SimpleHash("md5", user.getPassword(), salt, times).toString();
         user.setSalt(salt);
         user.setPassword(encodedPassword);
-        userJpaRepository.save(user);
         return userJpaRepository.save(user);
+        //return userJpaRepository.save(user);
     }
 
     @Override

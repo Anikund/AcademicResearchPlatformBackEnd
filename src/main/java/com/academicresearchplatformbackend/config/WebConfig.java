@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         //修改allowedOrigins为前端端口
         registry.addMapping("/**").allowCredentials(true)
-                .allowedOrigins("http://localhost:8080")
+                .allowedOrigins("http://localhost:9527")
                 .allowedMethods("POST", "GET", "DELETE", "PUT", "OPTIONS")
                 .allowedHeaders("*");
     }
