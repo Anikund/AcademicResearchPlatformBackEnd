@@ -239,5 +239,15 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
         return false;
     }
 
+    @Override
+    public ResearchProject deleteById(Long id) {
+        Optional<ResearchProject> op = researchProjectJpaRepository.findById(id);
+        if (op.isPresent()) {
+            researchProjectJpaRepository.deleteById(id);
+            return op.get();
+        }
+        return null;
+    }
+
 
 }

@@ -35,6 +35,7 @@ public class PermissionServiceImplTest {
         permissionService.addPermission("project:terminate");
         permissionService.addPermission("project:assign");
         permissionService.addPermission("project:consumefund");
+        permissionService.addPermission("project:delete");
         permissionService.addPermission("project:view");
         permissionService.addPermission("organization:create");
         permissionService.addPermission("organization:update");

@@ -38,4 +38,6 @@ public interface ResearchProjectService {
     boolean consumeFund(Long pid, int amount);
 
     boolean midExamine(Long pid);
+
+    ResearchProject deleteById(Long id);
 }
