@@ -83,7 +83,7 @@ public class RoleController {
     @PutMapping("/update")
     @ApiOperation("修改传来的角色信息，需要传入整个角色，这是直接通过赋值改的，不是一个字段一个字段改的，所以先通过id获取再在那个基础上修改")
     @ApiImplicitParam(name = "role", value = "修改后的角色信息")
-    public ResponseEntity<String> updateRole(Role role) {
+    public ResponseEntity<String> updateRole(@RequestBody Role role) {
         Subject currentUser = SecurityUtils.getSubject();
         if (currentUser.isPermitted("super")) {
             if (roleService.updateRole(role)) {

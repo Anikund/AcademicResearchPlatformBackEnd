@@ -213,6 +213,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> op = this.findById(uid);
         if (op.isPresent()) {
             op.get().setRoles(roles);
+            userJpaRepository.save(op.get());
             return true;
         }
         return false;

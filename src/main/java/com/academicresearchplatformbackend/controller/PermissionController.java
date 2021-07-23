@@ -26,15 +26,16 @@ public class PermissionController {
     }
 
     @GetMapping("/all")
-    @ApiOperation("获得所有的权限列表，谁都能获得")
+    @ApiOperation("获得所有的权限列表，需要super权限")
     public ResponseEntity<Page<Permission>> getAllPermissionsPageable(
             @RequestParam int page, @RequestParam int size
-    ) {/*
+    ) {
         if (SecurityUtils.getSubject().isPermitted("super")) {
+            log.info("所有权限列表被请求");
             return new ResponseEntity<>(permissionService.findAllPageable(page, size), HttpStatus.OK);
-        }*/
+        }
         log.info("所有权限列表被请求");
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(permissionService.findAllPageable(page, size),HttpStatus.UNAUTHORIZED);
     }
 
 

@@ -168,6 +168,7 @@ public class UserController {
             Optional<User> op = userService.findById(uid);
             op.ifPresent(user -> log.info("用户：" + (SecurityUtils.getSubject().getPrincipal()).toString() + " 请求更新用户(id=" + uid + ")，该用户此时具有的角色如下：\n"
                     + user.getRoles().toString()));
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         log.info("用户：" + SecurityUtils.getSubject().getPrincipal().toString() + " 请求更新用户(id=" + uid + ")失败");
