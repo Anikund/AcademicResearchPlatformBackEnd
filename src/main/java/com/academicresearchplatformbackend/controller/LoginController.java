@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.functors.ExceptionPredicate;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -62,7 +63,11 @@ public class LoginController {
             //currentUser = subject.getPrincipal();
             log.info("用户" + foundUser.getUsername() + "，姓名" + foundUser.getName() + "登录成功");
             return new ResponseEntity<>(foundUser, HttpStatus.OK);
-        } catch (UnknownAccountException uae) {
+        } /*catch (AuthenticationException ae) {
+            System.out.println(ae.getMessage());
+            log.info(ae.getMessage());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } */catch (UnknownAccountException uae) {
             System.out.println("unknown account");
             log.info("未知账号");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -70,10 +75,10 @@ public class LoginController {
             System.out.println("incorrect password");
             log.info("密码错误");
             return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             System.out.println("other");
             log.info("其他原因登录失败");
-            System.out.println(e.toString());
+            //System.out.println(e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

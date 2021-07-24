@@ -2,8 +2,11 @@ package com.academicresearchplatformbackend.config;
 
 import com.academicresearchplatformbackend.security.RbacRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.mgt.SessionsSecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,16 +26,16 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
-    /*
+
     @Bean
-    public SecurityManager securityManager() {
+    public SessionsSecurityManager securityManager() {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
-        defaultWebSecurityManager.setRealm(getRbacRealm());
+        defaultWebSecurityManager.setRealm(getRealm());
         return defaultWebSecurityManager;
     }
-*/
+
     @Bean
-    public RbacRealm getRbacRealm() {
+    public Realm getRealm() {
         RbacRealm r = new RbacRealm();
         r.setCredentialsMatcher(hashedCredentialsMatcher());
         return r;

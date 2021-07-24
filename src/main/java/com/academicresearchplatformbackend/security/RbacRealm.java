@@ -1,7 +1,6 @@
 package com.academicresearchplatformbackend.security;
 
 import com.academicresearchplatformbackend.MO.MiddleResult;
-import com.academicresearchplatformbackend.dao.Menu;
 import com.academicresearchplatformbackend.dao.Permission;
 import com.academicresearchplatformbackend.dao.Role;
 import com.academicresearchplatformbackend.dao.User;
@@ -37,6 +36,13 @@ public class RbacRealm extends AuthorizingRealm {
     }
 
     @Override
+    public boolean supports(AuthenticationToken token) {
+
+        return token instanceof UsernamePasswordToken;
+    }
+
+
+    @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo s = new SimpleAuthorizationInfo();
         MiddleResult<User> mr= myUtils.getCurrentAuthenticatedUser();
@@ -68,7 +74,8 @@ public class RbacRealm extends AuthorizingRealm {
             String salt = user.getSalt();
             return new SimpleAuthenticationInfo(username, password, ByteSource.Util.bytes(salt), getName());
         } else {
-            throw new AuthenticationException();
+//            return null;
+            throw new UnknownAccountException();
         }
     }
 }
