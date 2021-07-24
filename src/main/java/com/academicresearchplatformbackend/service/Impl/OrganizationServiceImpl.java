@@ -9,6 +9,7 @@ import com.academicresearchplatformbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Page<Organization> getAllPageable(int page, int size) {
-        return organizationJpaRepository.findAll(PageRequest.of(page, size));
+        return organizationJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override

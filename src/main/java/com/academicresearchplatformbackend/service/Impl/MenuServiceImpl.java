@@ -6,6 +6,7 @@ import com.academicresearchplatformbackend.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,6 +46,6 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Page<Menu> findAllPageable(int page, int size) {
-        return menuJpaRepository.findAll(PageRequest.of(page, size));
+        return menuJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 }

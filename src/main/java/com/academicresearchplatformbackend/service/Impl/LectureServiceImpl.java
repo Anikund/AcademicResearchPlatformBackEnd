@@ -8,6 +8,7 @@ import com.academicresearchplatformbackend.service.LectureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -93,17 +94,17 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public Page<Lecture> findAllPageable(int page, int size) {
-        return lectureJpaRepository.findAll(PageRequest.of(page, size));
+        return lectureJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override
     public Page<Lecture> findAllByType(String type, int page, int size) {
-        return lectureJpaRepository.findAllByType(type, PageRequest.of(page, size));
+        return lectureJpaRepository.findAllByType(type, PageRequest.of(page, size,Sort.by("id").ascending()));
     }
 
     @Override
     public Page<Lecture> findAllByLevel(String level, int page, int size) {
-        return lectureJpaRepository.findAllByLevel(level, PageRequest.of(page, size));
+        return lectureJpaRepository.findAllByLevel(level, PageRequest.of(page, size,Sort.by("id").ascending()));
     }
 
     @Override

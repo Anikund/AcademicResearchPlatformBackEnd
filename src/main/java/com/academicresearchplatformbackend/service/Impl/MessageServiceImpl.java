@@ -8,6 +8,7 @@ import com.academicresearchplatformbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -77,23 +78,23 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Page<Message> getByReceiver(User user, int page, int size) {
-        return messageJpaRepository.findAllByReceiver(user, PageRequest.of(page, size));
+        return messageJpaRepository.findAllByReceiver(user, PageRequest.of(page, size, Sort.by("sentTime").descending()));
     }
 
 
     @Override
     public Page<Message> getByTransmitter(User user, int page, int size) {
-        return messageJpaRepository.findAllByTransmitter(user, PageRequest.of(page, size));
+        return messageJpaRepository.findAllByTransmitter(user, PageRequest.of(page, size, Sort.by("sentTime").descending()));
     }
 
     @Override
     public Page<Message> getByTimeBetween(Timestamp fore, Timestamp end, int page, int size) {
-        return messageJpaRepository.findAllBySentTimeBetween(fore, end, PageRequest.of(page, size));
+        return messageJpaRepository.findAllBySentTimeBetween(fore, end, PageRequest.of(page, size, Sort.by("sentTime").descending()));
     }
 
     @Override
     public Page<Message> getAllMessages(int page, int size) {
-        return messageJpaRepository.findAll(PageRequest.of(page, size));
+        return messageJpaRepository.findAll(PageRequest.of(page, size, Sort.by("sentTime").descending()));
     }
 
 

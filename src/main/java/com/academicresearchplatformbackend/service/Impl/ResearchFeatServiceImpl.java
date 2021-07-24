@@ -8,6 +8,7 @@ import com.academicresearchplatformbackend.service.ResearchFeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -76,21 +77,21 @@ public class ResearchFeatServiceImpl implements ResearchFeatService {
 
     @Override
     public Page<ResearchFeat> findAllPageable(int page, int size) {
-        return researchFeatJpaRepository.findAll(PageRequest.of(page, size));
+        return researchFeatJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override
     public Page<ResearchFeat> findByType(String type, int page, int size) {
-        return researchFeatJpaRepository.findByType(type, PageRequest.of(page, size));
+        return researchFeatJpaRepository.findByType(type, PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override
     public Page<ResearchFeat> findByLevel(int level, int page, int size) {
-        return researchFeatJpaRepository.findByLevel(level, PageRequest.of(page, size));
+        return researchFeatJpaRepository.findByLevel(level, PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 
     @Override
     public Page<ResearchFeat> findByIsPatent(boolean isPatent, int page, int size) {
-        return researchFeatJpaRepository.findByIsPatent(isPatent, PageRequest.of(page, size));
+        return researchFeatJpaRepository.findByIsPatent(isPatent, PageRequest.of(page, size, Sort.by("id").ascending()));
     }
 }

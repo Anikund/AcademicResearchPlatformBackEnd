@@ -12,6 +12,7 @@ import com.academicresearchplatformbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -178,7 +179,7 @@ public class ResearchProjectServiceImpl implements ResearchProjectService {
 
     @Override
     public Page<ResearchProject> findAllPageable(int page, int size) {
-        return researchProjectJpaRepository.findAll(PageRequest.of(page, size));
+        return researchProjectJpaRepository.findAll(PageRequest.of(page, size, Sort.by("applyTime").descending()));
     }
 
     @Override

@@ -12,3 +12,4 @@ PermissionServiceImplTest里面的唯一方法，
 username:admin
 password:admin
 
+修改src->config->WebConfig中的allowedOrigins为前端

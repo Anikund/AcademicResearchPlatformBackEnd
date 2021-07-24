@@ -6,6 +6,7 @@ import com.academicresearchplatformbackend.service.FileResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -68,6 +69,7 @@ public class FileResourceServiceImpl implements FileResourceService {
 
     @Override
     public Page<FileResource> findAllPageable(int page, int size) {
-        return fileResourceJpaRepository.findAll(PageRequest.of(page, size));
+        return fileResourceJpaRepository.findAll(PageRequest.of(page, size, Sort.by("createdTime").descending()));
     }
+    
 }

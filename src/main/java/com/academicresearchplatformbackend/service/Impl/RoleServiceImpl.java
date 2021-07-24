@@ -9,6 +9,7 @@ import com.academicresearchplatformbackend.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public Page<Role> getAllPageable(int page, int size) {
-        return roleJpaRepository.findAll(PageRequest.of(page, size));
+        return roleJpaRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending()));
 
     }
 
