@@ -239,6 +239,14 @@ public class ResearchProjectController {
                 subject.isPermitted("project:censor")) {
             if (researchProjectService.censor(pid)) {
                 log.info("用户:" + subject.getPrincipal().toString() + " 审查通过了项目(id=" + pid + ")");
+                Optional<ResearchProject> oop = researchProjectService.findById(pid);
+                User currentUser = userService.findByUsername(subject.getPrincipal().toString());
+
+                if (oop.isPresent() && currentUser!=null) {
+
+                    messageService.sendMessage(oop.get().getUsers().get(0).getId(),
+                            currentUser.getId(), "你的项目（项目编号=" + pid + "）已通过审核");
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             log.info("用户:" + subject.getPrincipal().toString() + " 审查项目(id=" + pid + ")失败");
@@ -319,7 +327,14 @@ public class ResearchProjectController {
         if (subject.isPermitted("super") ||
                 subject.isPermitted("project:terminate")) {
             if (researchProjectService.terminate(pid)) {
-                log.info("用户:" + subject.getPrincipal().toString() + " 请求终止项目(id=" + pid + ")");
+                log.info("用户:" + subject.getPrincipal().toString() + " 终止项目(id=" + pid + ")");
+                Optional<ResearchProject> oprp = researchProjectService.findById(pid);
+                User currentUser = userService.findByUsername(subject.getPrincipal().toString());
+                if (oprp.isPresent() && currentUser != null) {
+                    oprp.get().getUsers().forEach(i->{
+                        messageService.sendMessage(i.getId(), currentUser.getId(), "你参与的项目（项目id=" + pid + "）已经被终止");
+                    });
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             log.info("用户:" + subject.getPrincipal().toString() + " 请求终止项目(id=" + pid + ")失败");
@@ -343,6 +358,13 @@ public class ResearchProjectController {
         if (subject.isPermitted("super") || subject.isPermitted("project:assign")) {
             if (researchProjectService.assignFund(pid, amount)) {
                 log.info("用户:" + subject.getPrincipal().toString() + " 赋予项目(id=" + pid + ")资金" + amount + "元");
+                Optional<ResearchProject> oprp = researchProjectService.findById(pid);
+                User currentUser = userService.findByUsername(subject.getPrincipal().toString());
+                if (oprp.isPresent() && currentUser != null) {
+                    oprp.get().getUsers().forEach(i->{
+                        messageService.sendMessage(i.getId(), currentUser.getId(), "你参与的项目（项目id=" + pid + "）已到账资金" + amount + "元");
+                    });
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             log.info("用户:" + subject.getPrincipal().toString() + " 赋予项目(id=" + pid + ")资金" + amount + "元，失败");
@@ -370,6 +392,13 @@ public class ResearchProjectController {
                 if (project.get().getUsers().contains(user)) {
                     if (researchProjectService.consumeFund(pid, amount)) {
                         log.info("用户:" + subject.getPrincipal().toString() + " 消耗项目(id=" + pid + ")资金" + amount + "元");
+                        Optional<ResearchProject> oprp = researchProjectService.findById(pid);
+                        User currentUser = userService.findByUsername(subject.getPrincipal().toString());
+                        if (oprp.isPresent() && currentUser != null) {
+                            oprp.get().getUsers().forEach(i->{
+                                messageService.sendMessage(i.getId(), currentUser.getId(), "你参与的项目（项目id=" + pid + "）已消耗资金" + amount + "元");
+                            });
+                        }
                         return new ResponseEntity<>(HttpStatus.OK);
                     }
                     log.info("用户:" + subject.getPrincipal().toString() + " 消耗项目(id=" + pid + ")资金" + amount + "元，失败");
@@ -399,6 +428,13 @@ public class ResearchProjectController {
                 subject.isPermitted("project:censor")) {
             if (researchProjectService.midExamine(pid)) {
                 log.info("用户:" + subject.getPrincipal().toString() + " 让id为" + pid + "的项目通过了中期检查");
+                Optional<ResearchProject> oprp = researchProjectService.findById(pid);
+                User currentUser = userService.findByUsername(subject.getPrincipal().toString());
+                if (oprp.isPresent() && currentUser != null) {
+                    oprp.get().getUsers().forEach(i->{
+                        messageService.sendMessage(i.getId(), currentUser.getId(), "你参与的项目（项目id=" + pid + "）已经通过中期检查");
+                    });
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             log.info("用户:" + subject.getPrincipal().toString() + " 欲让id为" + pid + "的项目通过中期检查，失败");
